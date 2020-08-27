@@ -22,3 +22,7 @@ const requireAuth = function (req, res, next) {
     }
 
 }
+
+module.exports = {
+    requireAuth
+};

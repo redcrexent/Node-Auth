@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const authRoute = require('./routes/authroute')
 const cookieParser = require('cookie-parser')
+const {requireAuth} = require("./middleware/authmiddleware");
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -28,43 +29,16 @@ mongoose
         console.log(err)
     });
 
-//Auth
-app.use((req, res, next) => {
-
-    const url = req.url;
-    const jwt = req.cookies["jwt-auth"];
-
-    if (!jwt && !(url.indexOf('login') > 0) && url.indexOf("signup") < 0) {
-        res.redirect("/login");
-    }
-    console.log(req);
-
-    console.log('In another Middle ware');
-    next();
+app.get('/logout', requireAuth, (req, res) => {
+    res.cookie('jwt-auth', '', {maxAge: 1});
+    res.redirect("/login")
 });
 
-app.get('/', (req, res) => {
-    //console.log(req.cookies["jwt-auth"]);
-    console.log(req.cookies["jwt-auth"]);
-    const jwtauth = req.cookies["jwt-auth"];
-    if (jwtauth) 
-        res.render('home', {Title: 'Home'});
-    else 
-        res.redirect("/login");
-    }
-);
+app.get('/', requireAuth, (req, res) => {
+    res.render('home', {Title: 'Home'});
+});
 
-app.get('/smoothies', (req, res) => {
-
-    // console.log(req.cookies.get('jwt-auth'));
-    const jwtauth = req.cookies["jwt-auth"];
-    if (jwtauth) 
-        res.render('smothies');
-    else 
-        res.redirect("/login");
-    }
-);
+app.get('/smoothies', requireAuth, (req, res) => {
+    res.render('smothies', {Title: 'Smoothies'});
+});
 app.use(authRoute)
-
-// 404 app.use((req, res) => {     res         .status(404) .render('404',
-// {Title: 'Not Found 404'}); });

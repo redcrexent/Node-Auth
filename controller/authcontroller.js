@@ -72,7 +72,7 @@ module.exports.signup_post = async(req, res) => {
 }
 module.exports.login_get = (req, res) => {
     // console.log(req);
-    console.log(req.cookies["jwt-auth"]);
+    //console.log(req.cookies["jwt-auth"]);
     res.render('login', {Title: 'Login'});
 };
 module.exports.login_post = async(req, res) => {
@@ -96,6 +96,6 @@ module.exports.login_post = async(req, res) => {
         const errors = handleError(err)
         res
             .status(400)
-            .json({error});
+            .json({error: errors});
     }
 };
